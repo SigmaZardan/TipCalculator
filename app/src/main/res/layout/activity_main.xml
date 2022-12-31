@@ -7,6 +7,8 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!--Views on the left -->
+
 
     <TextView
         android:id="@+id/tvBaseLabel"
@@ -43,6 +45,8 @@
         app:layout_constraintEnd_toEndOf="@+id/tvBaseLabel"
         app:layout_constraintTop_toBottomOf="@+id/tvTipPercent" />
 
+    <!-- Views on the right -->
+
     <TextView
         android:id="@+id/tvTotalLabel"
         android:layout_width="wrap_content"
@@ -52,9 +56,19 @@
         android:textColor="@color/black"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/tvBaseLabel"
-        app:layout_constraintTop_toBottomOf="@+id/tvTipLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/tvNumberOfPeople" />
 
-    <!-- Views on the right -->
+    <TextView
+        android:id="@+id/tvNumberOfPeople"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="People"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/tvBaseLabel"
+        app:layout_constraintTop_toBottomOf="@+id/tvTipLabel"
+        tools:layout_editor_absoluteX="41dp" />
 
     <EditText
         android:id="@+id/etBaseAmount"
@@ -123,6 +137,27 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Switch
+        android:id="@+id/switchRound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:text="Round Up"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvTotalLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvTotalLabel" />
+
+    <EditText
+        android:id="@+id/etNumberOfPeople"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:ems="8"
+        android:inputType="numberSigned"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tvNumberOfPeople"
+        app:layout_constraintStart_toEndOf="@+id/tvNumberOfPeople" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

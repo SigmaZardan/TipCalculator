@@ -10,8 +10,10 @@ import android.util.Log
 import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.Switch
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import kotlin.math.roundToInt
 
 
 private const val TAG = "MainActivity"
@@ -25,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvTipAmount : TextView
     private lateinit var tvTotalAmount : TextView
     private lateinit var tvTipDescription : TextView
+    private lateinit var etNumberOfPeople : EditText
+    private lateinit var switchRoundUp : Switch
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -37,6 +41,8 @@ class MainActivity : AppCompatActivity() {
         tvTipAmount = findViewById(R.id.tvTipAmount)
         tvTotalAmount = findViewById(R.id.tvTotalAmount)
         tvTipDescription = findViewById(R.id.tvTipDescription)
+        etNumberOfPeople = findViewById(R.id.etNumberOfPeople)
+        switchRoundUp = findViewById(R.id.switchRound)
 
         // handling the the initial value for the seekBar and tip and also tip description
         seekBarTip.progress = INITIAL_VALUE
@@ -75,7 +81,31 @@ class MainActivity : AppCompatActivity() {
 
         })
 
+        // handle the number of people for dividing the total amount
+        etNumberOfPeople.addTextChangedListener(object :TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun afterTextChanged(p0: Editable?) {
+                computeTipAndTotal()
+            }
+
+        })
+
+
+       switchRoundUp.setOnCheckedChangeListener { _, isChecked ->
+           if (isChecked) roundUp() else computeTipAndTotal()
+       }
+
+
+    }
+
+    // round up the total amount
+    private fun roundUp(){
+        val totalAmount = tvTotalAmount.text.toString().toDouble()
+        val roundedValue = totalAmount.roundToInt()
+        tvTotalAmount.text = roundedValue.toString()
     }
 
     private fun updateTipDescription(tipPercent: Int) {
@@ -106,15 +136,16 @@ class MainActivity : AppCompatActivity() {
 //
 //    }
 
-    fun computeTipAndTotal(){
+   private fun computeTipAndTotal() {
         // get the value of the base and the tip percent
 
         try {
             val baseAmount = etBaseAmount.text.toString().toDouble()
             val tipPercent = seekBarTip.progress
+            val numberOfPeople = etNumberOfPeople.text.toString().toInt()
             Log.i(TAG, tipPercent.toString())
-            val tipAmount = baseAmount * tipPercent / 100
-            val totalAmount = baseAmount + tipAmount
+            val tipAmount = (baseAmount * tipPercent) / 100
+            val totalAmount = (baseAmount + tipAmount) / numberOfPeople
             tvTipAmount.text = String.format("%.2f", tipAmount)
             tvTotalAmount.text = String.format("%.2f", totalAmount)
         }
@@ -125,4 +156,5 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
 }
