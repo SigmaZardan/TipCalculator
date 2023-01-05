@@ -7,11 +7,9 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.widget.EditText
-import android.widget.SeekBar
+import android.view.View
+import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
-import android.widget.Switch
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import kotlin.math.roundToInt
 
@@ -29,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvTipDescription : TextView
     private lateinit var etNumberOfPeople : EditText
     private lateinit var switchRoundUp : Switch
+    private lateinit var spinnerCountry: Spinner
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -43,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         tvTipDescription = findViewById(R.id.tvTipDescription)
         etNumberOfPeople = findViewById(R.id.etNumberOfPeople)
         switchRoundUp = findViewById(R.id.switchRound)
+        spinnerCountry = findViewById(R.id.spinnerCountry)
 
         // handling the the initial value for the seekBar and tip and also tip description
         seekBarTip.progress = INITIAL_VALUE
@@ -94,18 +94,39 @@ class MainActivity : AppCompatActivity() {
         })
 
 
+        // round up the total value
        switchRoundUp.setOnCheckedChangeListener { _, isChecked ->
            if (isChecked) roundUp() else computeTipAndTotal()
        }
 
 
+
+
+    }
+
+    // update the currency according to the country name
+    private fun updateCurrency(currency: String , tipAmount : Double, totalAmount : Double) {
+        tvTipAmount.text = String.format("$currency %.2f", tipAmount)
+        tvTotalAmount.text =  String.format("$currency %.2f", totalAmount)
+
     }
 
     // round up the total amount
     private fun roundUp(){
-        val totalAmount = tvTotalAmount.text.toString().toDouble()
-        val roundedValue = totalAmount.roundToInt()
-        tvTotalAmount.text = roundedValue.toString()
+
+        // only take the value after the space
+        val totalAmountStr = tvTotalAmount.text.toString()
+         var  totalAmount : Double  = 0.0
+        for(i in totalAmountStr.indices){
+
+            if(totalAmountStr[i] == ' ') {
+                 totalAmount = totalAmountStr.substring(i + 1, totalAmountStr.length).toDouble()
+                val roundedValue = totalAmount.roundToInt()
+                tvTotalAmount.text = totalAmountStr.replace(totalAmount.toString(), roundedValue.toString(), true)
+                break
+            }
+
+        }
     }
 
     private fun updateTipDescription(tipPercent: Int) {
@@ -121,9 +142,7 @@ class MainActivity : AppCompatActivity() {
         ContextCompat.getColor(this, R.color.bestColor)) as Int
         tvTipDescription.setTextColor(tipDescriptionColor)
 
-
     }
-
 //    private fun updateTipDescriptionColor(tipPercent: Int){
 //        val tipDescriptionColor : Int = when(tipPercent) {
 //            in 0.. 9 -> R.color.colorForPoor
@@ -146,8 +165,29 @@ class MainActivity : AppCompatActivity() {
             Log.i(TAG, tipPercent.toString())
             val tipAmount = (baseAmount * tipPercent) / 100
             val totalAmount = (baseAmount + tipAmount) / numberOfPeople
-            tvTipAmount.text = String.format("%.2f", tipAmount)
-            tvTotalAmount.text = String.format("%.2f", totalAmount)
+            updateCurrency("NPR", tipAmount, totalAmount)
+
+
+
+            // handle the item selection on the spinner
+            spinnerCountry.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    when(adapterView?.getItemAtPosition(position).toString()){
+
+                        "India" -> updateCurrency("INR", tipAmount, totalAmount)
+
+                        "USA" -> updateCurrency("$", tipAmount, totalAmount)
+
+                        else -> updateCurrency("NPR", tipAmount, totalAmount)
+                    }
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    TODO("Not yet implemented")
+                }
+
+            }
+
         }
         catch(e : NumberFormatException){
             e.printStackTrace()

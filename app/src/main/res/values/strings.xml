@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">TipCalculator</string>
+
+    <string-array name="countries">
+        <item>Nepal</item>
+        <item>India</item>
+        <item>USA</item>
+    </string-array>
 </resources>
